@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "692198435671",
+    "project_id": "group16entertainment",
+    "storage_bucket": "group16entertainment.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:692198435671:android:c9173ecbe698e92ef4ec12",
+        "android_client_info": {
+          "package_name": "com.g16.entertainment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp9haMq6dOSKBDt8p4hxV0qLhx2vLUNik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
