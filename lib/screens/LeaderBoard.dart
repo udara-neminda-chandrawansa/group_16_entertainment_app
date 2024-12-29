@@ -105,7 +105,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.deepPurple.shade700.withOpacity(0.8),
+                          color: Colors.deepPurple.shade700,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(

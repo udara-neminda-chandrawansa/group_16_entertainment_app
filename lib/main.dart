@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:group_16_entertainment_app/screens/LeaderBoard.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:group_16_entertainment_app/screens/GameScreen.dart';
+import 'package:group_16_entertainment_app/screens/login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Quiz App - Group 16",
       theme: ThemeData.light(), // Use a dark theme if desired
-      home: HomePage(), // Set LeaderboardScreen as the home screen
+      home: LoginPage(), // Set LeaderboardScreen as the home screen
     );
   }
 }

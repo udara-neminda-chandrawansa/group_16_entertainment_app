@@ -622,5 +622,5 @@ packages:
     source: hosted
     version: "2.0.3"
 sdks:
-  dart: ">=3.7.0-209.0.dev <4.0.0"
+  dart: ">=3.7.0-123.0.dev <4.0.0"
   flutter: ">=3.24.0"
