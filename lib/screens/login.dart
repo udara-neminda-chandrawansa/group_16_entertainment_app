@@ -1,4 +1,6 @@
 // imports
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
@@ -44,24 +46,102 @@ class _LoginPageState extends State<LoginPage> {
           var score = response.values.last;
           // User is logged in successfully, navigate to HomePage
           print('Logged in successfully: $username User ID: $user_id');
+          // save user auth data locally (offline capability)
+          saveAuthDataLocally(user_id, username, password, score);
+          // load home
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(userId: user_id, prevScore: score),
+              builder:
+                  (context) => HomePage(
+                    userId: user_id,
+                    username: username,
+                    prevScore: score,
+                  ),
             ),
           );
         } else {
-          // Handle invalid credentials or errors
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("Login Failed!")));
+          List<Map<String, dynamic>> user = await loadCachedUser();
+          if (user.isEmpty) {
+            // Handle invalid credentials or errors
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("Login Failed!")));
+          } else {
+            print("Saved user: $user");
+          }
         }
       } catch (e) {
         // Handle any other errors
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login Failed - Error: ${e.toString()}')),
+          SnackBar(content: Text('Connection Failed - Error: ${e.toString()}')),
         );
+        // ** try login using local user data
+        List<Map<String, dynamic>> user = await loadCachedUser();
+        if (user.isEmpty) {
+          // Handle invalid credentials or errors
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Local Login Failed!")));
+        } else {
+          // validate local user against input
+          if (user[0]["username"] == username &&
+              user[0]["password"] == password) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("Local Login Success!")));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => HomePage(
+                      userId: user[0]["user_id"],
+                      username: user[0]["username"],
+                      prevScore: user[0]["points"],
+                    ),
+              ),
+            );
+          }
+        }
       }
+    }
+  }
+
+  // use shared preferences to save auth data locally (offline capability)
+  Future<void> saveAuthDataLocally(
+    String userId,
+    String username,
+    String password,
+    int score,
+  ) async {
+    List<Map<String, dynamic>> user = [
+      {
+        "user_id": userId,
+        "username": username,
+        "password": password,
+        "points": score,
+      },
+    ];
+    try {
+      // Save user to SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cached_user', jsonEncode(user));
+      print("User saved: $user");
+    } catch (ex) {
+      print(ex.toString());
+    }
+  }
+
+  // load offline user data
+  Future<List<Map<String, dynamic>>> loadCachedUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? cachedData = prefs.getString('cached_user');
+
+    if (cachedData != null) {
+      List<dynamic> decodedData = jsonDecode(cachedData);
+      return decodedData.map((e) => Map<String, dynamic>.from(e)).toList();
+    } else {
+      return []; // No cached data found
     }
   }
 

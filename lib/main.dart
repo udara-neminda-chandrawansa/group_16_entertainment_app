@@ -31,14 +31,26 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
   final String userId; // Declare userId as a field
+  final String username;
   final int prevScore;
-  const HomePage({super.key, required this.userId, required this.prevScore});
+  const HomePage({
+    super.key,
+    required this.userId,
+    required this.username,
+    required this.prevScore,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tech Quiz Home'),
+        title: Text(
+          'Tech Quiz Home\nWelcome $username',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20),
+        ),
+        backgroundColor: Colors.purple,
+        foregroundColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -50,6 +62,7 @@ class HomePage extends StatelessWidget {
             );
           },
         ),
+        actions: [Text("⚡ $prevScore  ")],
       ),
       body: Center(
         child: Column(
@@ -61,8 +74,11 @@ class HomePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder:
-                        (context) =>
-                            GameScreen(userId: userId, prevScore: prevScore),
+                        (context) => GameScreen(
+                          userId: userId,
+                          username: username,
+                          prevScore: prevScore,
+                        ),
                   ),
                 );
               },

@@ -7,8 +7,14 @@ import 'package:group_16_entertainment_app/main.dart';
 
 class GameScreen extends StatefulWidget {
   final String userId; // Declare userId as a field
+  final String username;
   final int prevScore;
-  const GameScreen({super.key, required this.userId, required this.prevScore});
+  const GameScreen({
+    super.key,
+    required this.userId,
+    required this.username,
+    required this.prevScore,
+  });
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -170,8 +176,11 @@ class _GameScreenState extends State<GameScreen> {
               context,
               MaterialPageRoute(
                 builder:
-                    (context) =>
-                        HomePage(userId: widget.userId, prevScore: score),
+                    (context) => HomePage(
+                      userId: widget.userId,
+                      username: widget.username,
+                      prevScore: score,
+                    ),
               ),
             );
           },
