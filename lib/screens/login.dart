@@ -33,18 +33,22 @@ class _LoginPageState extends State<LoginPage> {
         final response =
             await Supabase.instance.client
                 .from('users') // Replace 'users' with your actual table name
-                .select('username, password, points')
+                .select('user_id, username, password, points')
                 .filter('username', 'eq', username)
                 .filter('password', 'eq', password)
                 .single(); // Use .single() to retrieve a single user
 
         // Check if the sign-in was successful
         if (response.isNotEmpty) {
+          var user_id = response.values.first;
+          var score = response.values.last;
           // User is logged in successfully, navigate to HomePage
-          print('Logged in successfully: $username');
+          print('Logged in successfully: $username User ID: $user_id');
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(
+              builder: (context) => HomePage(userId: user_id, prevScore: score),
+            ),
           );
         } else {
           // Handle invalid credentials or errors
@@ -79,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                   Center(
                     // show app name as banner text
                     child: const Text(
-                      'Tech Quiz',
+                      'Tech Quiz Login',
                       style: TextStyle(
                         color: Colors.purpleAccent,
                         fontSize: 30,
@@ -92,7 +96,9 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _usernameController,
                     decoration: InputDecoration(
                       labelText: 'Username',
-                      prefixIcon: const Icon(Icons.email_outlined),
+                      prefixIcon: const Icon(
+                        Icons.supervised_user_circle_outlined,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

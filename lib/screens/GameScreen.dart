@@ -1,10 +1,14 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:group_16_entertainment_app/main.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  final String userId; // Declare userId as a field
+  final int prevScore;
+  const GameScreen({super.key, required this.userId, required this.prevScore});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -23,6 +27,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    score = widget.prevScore;
     fetchQuestion();
   }
 
@@ -63,14 +68,53 @@ class _GameScreenState extends State<GameScreen> {
     });
   }
 
+  void stopCountdown() {
+    if (countdownTimer.isActive) {
+      countdownTimer.cancel(); // Stop the timer
+      print('Countdown timer stopped.');
+    }
+  }
+
   void checkAnswer(String answerKey) {
     final correctAnswers = questionData?['correct_answers'] ?? {};
     if (correctAnswers["${answerKey}_correct"] == "true") {
       setState(() {
         score += 10; // Increment score for correct answer
+        saveProgress(score);
       });
     }
     showResult();
+  }
+
+  void saveProgress(int points) async {
+    try {
+      // Perform the UPDATE query using Supabase client
+      final response = await Supabase.instance.client
+          .from('users') // Replace with your actual table name
+          .update({'points': points})
+          .eq('user_id', widget.userId) // Match the user_id
+          .select('user_id, points');
+
+      if (response.isEmpty) {
+        // Handle error from the update query
+        print('Error updating points!');
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving progress!')));
+      } else {
+        // Update was successful
+        print('Progress saved successfully for user: ${widget.userId}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Progress saved successfully!')),
+        );
+      }
+    } catch (e) {
+      // Handle unexpected errors
+      print('Unexpected error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Unexpected error: $e')));
+    }
   }
 
   void showResult({bool isTimeUp = false}) {
@@ -118,9 +162,18 @@ class _GameScreenState extends State<GameScreen> {
         foregroundColor: Colors.white,
         backgroundColor: Colors.purple,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.home),
+          tooltip: "Back to Home",
           onPressed: () {
-            Navigator.pop(context);
+            stopCountdown();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) =>
+                        HomePage(userId: widget.userId, prevScore: score),
+              ),
+            );
           },
         ),
       ),

@@ -35,6 +35,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         child: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
+            tooltip: "Back",
             onPressed: () {
               Navigator.pop(context);
             },

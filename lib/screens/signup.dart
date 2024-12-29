@@ -1,6 +1,7 @@
 // imports
 import 'login.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -14,23 +15,64 @@ class _SignupPageState extends State<SignupPage> {
   // assign a unique identifier to the form
   final _formKey = GlobalKey<FormState>();
   // text controllers
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false; // var to store psw visibility
 
-  // method to signup
   void _signup() async {
     // this verifies the controls are all filled out
     if (_formKey.currentState!.validate()) {
-      print('Signed up');
-      // CODE TO CREATE USER ACCOUNT
-      // add user to db, show result
-      print("Number of users added: ");
-      // show news page
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
+      final name = _usernameController.text.trim();
+      final password = _passwordController.text.trim();
+
+      try {
+        // Get the number of rows in the users table
+        final response = await Supabase.instance.client
+            .from('users')
+            .select('user_id');
+
+        var rowCount = 0;
+        var userId = "user_1";
+
+        if (response.isNotEmpty) {
+          rowCount = response.length;
+          userId = 'user_${rowCount + 1}';
+        }
+
+        // Insert new user into the database
+        final insertResponse = await Supabase.instance.client
+            .from('users')
+            .insert({
+              'user_id': userId,
+              'username': name,
+              'password': password,
+              'points': 0,
+            })
+            .select('user_id');
+
+        if (insertResponse.isNotEmpty) {
+          print('Signed up successfully');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Account created successfully!')),
+          );
+
+          // Navigate to the login page
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        } else {
+          // Show error message
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Sign up failed!')));
+        }
+      } catch (e) {
+        // Handle any other errors
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
     }
   }
 
@@ -52,17 +94,19 @@ class _SignupPageState extends State<SignupPage> {
                   Center(
                     // display banner text
                     child: const Text(
-                      'Sign Up',
-                      style: TextStyle(color: Colors.blueAccent, fontSize: 50),
+                      'Tech Quiz Sign Up',
+                      style: TextStyle(color: Colors.blueAccent, fontSize: 30),
                     ),
                   ),
                   const SizedBox(height: 32),
                   // Email Input
                   TextFormField(
-                    controller: _emailController,
+                    controller: _usernameController,
                     decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email_outlined),
+                      labelText: 'Username',
+                      prefixIcon: const Icon(
+                        Icons.supervised_user_circle_outlined,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -126,6 +170,26 @@ class _SignupPageState extends State<SignupPage> {
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
+                  const SizedBox(height: 16), // spacing
+                  // Go back to login Option
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Already have an account?'),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            // show sign up page
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                          );
+                        },
+                        child: const Text('Login'),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -138,7 +202,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   void dispose() {
     // Clean up controllers
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
