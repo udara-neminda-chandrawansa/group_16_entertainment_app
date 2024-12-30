@@ -23,14 +23,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Quiz App - Group 16",
-      theme: ThemeData.light(), // Use a dark theme if desired
-      home: LoginPage(), // Set LeaderboardScreen as the home screen
+      theme: ThemeData.light(), // change theme here
+      home: LoginPage(), // Set LoginPage as the home screen
     );
   }
 }
 
 class HomePage extends StatelessWidget {
-  final String userId; // Declare userId as a field
+  final String userId; // vars needed for this screen
   final String username;
   final int prevScore;
   const HomePage({

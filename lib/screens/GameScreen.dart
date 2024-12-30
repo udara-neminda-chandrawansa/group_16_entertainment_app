@@ -1,16 +1,15 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'dart:async';
 import 'package:group_16_entertainment_app/main.dart';
+import 'package:group_16_entertainment_app/services/gameService.dart';
 
 class GameScreen extends StatefulWidget {
-  final String userId; // Declare userId as a field
+  final String userId;
   final String username;
   final int prevScore;
   final String category;
   final String difficulty;
+
   const GameScreen({
     super.key,
     required this.userId,
@@ -30,18 +29,12 @@ class _GameScreenState extends State<GameScreen> {
   int score = 0;
   int timer = 30;
   late Timer countdownTimer;
-  String diff = "easy";
-  String cat = "Linux";
-
-  final String apiUrl =
-      "https://quizapi.io/api/v1/questions?apiKey=Ieaj2jbcNs2s4ijvgnyJTTG76HZzfSyau6A2I2Aj&limit=1";
+  final GameService gameService = GameService();
 
   @override
   void initState() {
     super.initState();
     score = widget.prevScore;
-    diff = widget.difficulty;
-    cat = widget.category;
     fetchQuestion();
   }
 
@@ -52,22 +45,17 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> fetchQuestion() async {
-    try {
-      final response = await http.get(
-        Uri.parse("$apiUrl&difficulty=$diff&category=$cat"),
-      );
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        setState(() {
-          questionData = data.isNotEmpty ? data[0] : null;
-          timer = 30;
-          startCountdown();
-        });
-      } else {
-        throw Exception("Failed to load question");
-      }
-    } catch (e) {
-      print("Error fetching question: $e");
+    questionData = await gameService.fetchQuestion(
+      widget.category,
+      widget.difficulty,
+    );
+    if (questionData != null) {
+      setState(() {
+        timer = 30;
+        startCountdown();
+      });
+    } else {
+      print("Error: Could not fetch question.");
     }
   }
 
@@ -86,8 +74,7 @@ class _GameScreenState extends State<GameScreen> {
 
   void stopCountdown() {
     if (countdownTimer.isActive) {
-      countdownTimer.cancel(); // Stop the timer
-      print('Countdown timer stopped.');
+      countdownTimer.cancel();
     }
   }
 
@@ -95,41 +82,23 @@ class _GameScreenState extends State<GameScreen> {
     final correctAnswers = questionData?['correct_answers'] ?? {};
     if (correctAnswers["${answerKey}_correct"] == "true") {
       setState(() {
-        score += 10; // Increment score for correct answer
-        saveProgress(score);
+        score += 10;
+        saveProgress();
       });
     }
     showResult();
   }
 
-  void saveProgress(int points) async {
+  Future<void> saveProgress() async {
     try {
-      // Perform the UPDATE query using Supabase client
-      final response = await Supabase.instance.client
-          .from('users') // Replace with your actual table name
-          .update({'points': points})
-          .eq('user_id', widget.userId) // Match the user_id
-          .select('user_id, points');
-
-      if (response.isEmpty) {
-        // Handle error from the update query
-        print('Error updating points!');
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error saving progress!')));
-      } else {
-        // Update was successful
-        print('Progress saved successfully for user: ${widget.userId}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Progress saved successfully!')),
-        );
-      }
+      await gameService.saveProgress(widget.userId, score);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Progress saved successfully!')),
+      );
     } catch (e) {
-      // Handle unexpected errors
-      print('Unexpected error: $e');
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Unexpected error: $e')));
+      ).showSnackBar(SnackBar(content: Text('Error saving progress: $e')));
     }
   }
 
@@ -217,7 +186,7 @@ class _GameScreenState extends State<GameScreen> {
                             return Padding(
                               padding: const EdgeInsets.symmetric(
                                 vertical: 8.0,
-                              ), // Add spacing between items
+                              ),
                               child: ElevatedButton(
                                 onPressed: () {
                                   setState(() {
