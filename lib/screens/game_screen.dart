@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:group_16_entertainment_app/main.dart';
 import 'package:group_16_entertainment_app/services/game_service.dart';
+import 'package:group_16_entertainment_app/screens/results_screen.dart';
 
 class GameScreen extends StatefulWidget {
   final String userId;
@@ -26,6 +27,8 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   Map<String, dynamic>? questionData;
   String? selectedAnswer;
+  int totalQuestionsAsked = 0;
+  int correctAnswersGiven = 0;
   int score = 0;
   int timer = 30;
   late Timer countdownTimer;
@@ -109,6 +112,10 @@ class _GameScreenState extends State<GameScreen> {
         isTimeUp
             ? "Time's up! The correct answer: $correctAnsw"
             : "Correct Answer: $correctAnsw \nYour answer: ${selectedAnswer ?? 'skipped'}";
+    if (correctAnsw == selectedAnswer) {
+      correctAnswersGiven++;
+    }
+    totalQuestionsAsked++;
     showDialog(
       context: context,
       builder:
@@ -164,6 +171,30 @@ class _GameScreenState extends State<GameScreen> {
             );
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.scoreboard_rounded),
+            tooltip: "View Results",
+            onPressed: () {
+              stopCountdown();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => ResultsScreen(
+                        userId: widget.userId,
+                        username: widget.username,
+                        finalScore: score,
+                        correctAnswers: correctAnswersGiven,
+                        totalQuestions: totalQuestionsAsked,
+                        category: widget.category,
+                        difficulty: widget.difficulty,
+                      ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body:
           questionData == null
