@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:group_16_entertainment_app/screens/CategorySelectionScreen.dart';
 import 'package:group_16_entertainment_app/screens/LeaderBoard.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:group_16_entertainment_app/screens/GameScreen.dart';
 import 'package:group_16_entertainment_app/screens/login.dart';
 
 Future<void> main() async {
@@ -74,7 +74,7 @@ class HomePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder:
-                        (context) => GameScreen(
+                        (context) => CategorySelectionScreen(
                           userId: userId,
                           username: username,
                           prevScore: prevScore,

@@ -9,11 +9,15 @@ class GameScreen extends StatefulWidget {
   final String userId; // Declare userId as a field
   final String username;
   final int prevScore;
+  final String category;
+  final String difficulty;
   const GameScreen({
     super.key,
     required this.userId,
     required this.username,
     required this.prevScore,
+    required this.category,
+    required this.difficulty,
   });
 
   @override
@@ -26,6 +30,8 @@ class _GameScreenState extends State<GameScreen> {
   int score = 0;
   int timer = 30;
   late Timer countdownTimer;
+  String diff = "easy";
+  String cat = "Linux";
 
   final String apiUrl =
       "https://quizapi.io/api/v1/questions?apiKey=Ieaj2jbcNs2s4ijvgnyJTTG76HZzfSyau6A2I2Aj&limit=1";
@@ -34,6 +40,8 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     score = widget.prevScore;
+    diff = widget.difficulty;
+    cat = widget.category;
     fetchQuestion();
   }
 
@@ -45,7 +53,9 @@ class _GameScreenState extends State<GameScreen> {
 
   Future<void> fetchQuestion() async {
     try {
-      final response = await http.get(Uri.parse(apiUrl));
+      final response = await http.get(
+        Uri.parse("$apiUrl&difficulty=$diff&category=$cat"),
+      );
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
