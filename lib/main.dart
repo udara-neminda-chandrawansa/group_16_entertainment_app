@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:group_16_entertainment_app/screens/CategorySelectionScreen.dart';
-import 'package:group_16_entertainment_app/screens/LeaderBoard.dart';
+import 'package:group_16_entertainment_app/screens/category_selection_screen.dart';
+import 'package:group_16_entertainment_app/screens/leader_board.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:group_16_entertainment_app/screens/login.dart';
 

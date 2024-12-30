@@ -7,7 +7,7 @@ import '../main.dart';
 import '../screens/signup.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -42,19 +42,19 @@ class _LoginPageState extends State<LoginPage> {
 
         // Check if the sign-in was successful
         if (response.isNotEmpty) {
-          var user_id = response.values.first;
+          var userId = response.values.first;
           var score = response.values.last;
           // User is logged in successfully, navigate to HomePage
-          print('Logged in successfully: $username User ID: $user_id');
+          print('Logged in successfully: $username User ID: $userId');
           // save user auth data locally (offline capability)
-          saveAuthDataLocally(user_id, username, password, score);
+          saveAuthDataLocally(userId, username, password, score);
           // load home
           Navigator.push(
             context,
             MaterialPageRoute(
               builder:
                   (context) => HomePage(
-                    userId: user_id,
+                    userId: userId,
                     username: username,
                     prevScore: score,
                   ),

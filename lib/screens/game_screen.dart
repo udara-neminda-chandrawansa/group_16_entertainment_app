@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:group_16_entertainment_app/main.dart';
-import 'package:group_16_entertainment_app/services/gameService.dart';
+import 'package:group_16_entertainment_app/services/game_service.dart';
 
 class GameScreen extends StatefulWidget {
   final String userId;

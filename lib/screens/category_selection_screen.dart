@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:group_16_entertainment_app/screens/GameScreen.dart';
+import 'package:group_16_entertainment_app/screens/game_screen.dart';
 
 class CategorySelectionScreen extends StatefulWidget {
   final String userId;

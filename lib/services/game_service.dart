@@ -43,7 +43,7 @@ class GameService {
       }
     } catch (e) {
       print('Unexpected error: $e');
-      throw e;
+      rethrow;
     }
   }
 }
