@@ -50,7 +50,9 @@ class _GameScreenState extends State<GameScreen> {
     super.dispose();
   }
 
+  // method to fetch a question
   Future<void> fetchQuestion() async {
+    // get the question data from the api
     questionData = await gameService.fetchQuestion(
       widget.category,
       widget.difficulty,
@@ -61,16 +63,22 @@ class _GameScreenState extends State<GameScreen> {
         startCountdown();
       });
     } else {
-      print("Error: Could not fetch question.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: Could not fetch question.")),
+      );
     }
   }
 
+  // method to start the countdown timer
   void startCountdown() {
+    // set the timer to 30 seconds
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
+        // if timer > 0, decrement the timer by 1 second
         if (this.timer > 0) {
           this.timer--;
         } else {
+          // if timer reaches 0, cancel the timer and show the result
           timer.cancel();
           showResult(isTimeUp: true);
         }
@@ -78,13 +86,16 @@ class _GameScreenState extends State<GameScreen> {
     });
   }
 
+  // method to stop the countdown timer
   void stopCountdown() {
     if (countdownTimer.isActive) {
       countdownTimer.cancel();
     }
   }
 
+  // method to check the answer
   void checkAnswer(String inputAnswer) {
+    // get the correct answer
     final correctAnswer = getCorrectAnswer();
     if (correctAnswer == inputAnswer) {
       setState(() {
@@ -95,8 +106,10 @@ class _GameScreenState extends State<GameScreen> {
     showResult();
   }
 
+  // method to save the progress of the user
   Future<void> saveProgress() async {
     try {
+      // save the progress of the user using the user_id and the score
       await gameService.saveProgress(widget.userId, score);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Progress saved successfully!')),
@@ -108,17 +121,24 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+  // method to show the result
   void showResult({bool isTimeUp = false}) {
+    // cancel the countdown timer
     countdownTimer.cancel();
+    // get the correct answer
     String correctAnsw = getCorrectAnswer();
+    // message to show the result in a dialog
     String message =
         isTimeUp
             ? "Time's up! The correct answer: $correctAnsw"
             : "Correct Answer: $correctAnsw \nYour answer: ${selectedAnswer ?? 'skipped'}";
+    // if the selected answer is correct, increment the correct answers given
     if (correctAnsw == selectedAnswer) {
       correctAnswersGiven++;
     }
+    // increment the total questions asked
     totalQuestionsAsked++;
+    // show the result in a dialog
     showDialog(
       context: context,
       builder:
@@ -138,7 +158,9 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  // method to get the correct answer
   String getCorrectAnswer() {
+    // get the correct answer using the `Question` object
     final correctAnswer = questionData?.correctAnswer ?? '';
     switch (correctAnswer) {
       case 'answer_a':

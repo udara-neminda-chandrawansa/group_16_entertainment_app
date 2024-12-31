@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseInitializer {
   static Future<void> initialize() async {
+    // Initialize Supabase
     await Supabase.initialize(
       url: 'https://nzkxkiobcvdsdjlthjtd.supabase.co',
       anonKey:
@@ -10,11 +11,13 @@ class SupabaseInitializer {
   }
 }
 
+// method to save the user data in the database
 Future<List<Map<String, dynamic>>> saveUser(
   String userId,
   String name,
   String password,
 ) async {
+  // Insert the user data into the database
   final response = await Supabase.instance.client
       .from('users')
       .insert({
@@ -27,7 +30,9 @@ Future<List<Map<String, dynamic>>> saveUser(
   return response;
 }
 
+// method to get the user data from the database using the username and password
 Future<PostgrestMap> getUser(String username, String password) async {
+  // Get the user data from the database
   final response =
       await Supabase.instance.client
           .from('users')
@@ -38,6 +43,7 @@ Future<PostgrestMap> getUser(String username, String password) async {
   return response;
 }
 
+// method to get all the users from the database
 Future<List<Map<String, dynamic>>> getAllUsers() async {
   final response = await Supabase.instance.client
       .from('users')

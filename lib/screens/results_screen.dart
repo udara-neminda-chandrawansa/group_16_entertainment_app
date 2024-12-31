@@ -23,9 +23,11 @@ class ResultsScreen extends StatelessWidget {
     required this.difficulty,
   });
 
+  // method to share the score
   void shareScore(BuildContext context) {
     final String message =
         "I scored $finalScore points on the Tech Quiz App! 🎉\nCan you beat my score?";
+    // Share the score using the Share plugin
     Share.share(message);
   }
 

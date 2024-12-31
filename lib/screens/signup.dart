@@ -1,4 +1,3 @@
-// imports
 import 'package:group_16_entertainment_app/services/database_handler.dart';
 import 'login.dart';
 import 'package:flutter/material.dart';
@@ -32,8 +31,10 @@ class _SignupPageState extends State<SignupPage> {
         var rowCount = 0;
         var userId = "user_1";
 
+        // if the response is not empty, get the number of rows
         if (response.isNotEmpty) {
           rowCount = response.length;
+          // Generate a new user ID based on the number of rows
           userId = 'user_${rowCount + 1}';
         }
 

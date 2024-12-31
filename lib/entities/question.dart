@@ -1,4 +1,4 @@
-// this class demonstrate what a 'News' is
+// this class demonstrate what a `Question` is
 class Question {
   final String question;
   final List<String> answers;
@@ -12,6 +12,10 @@ class Question {
 
   // this method is used to convert json data to 'Question' objects with detailed structure
   factory Question.fromDetailedJson(Map<String, dynamic> json) {
+    // Creates a `Question` object from a JSON map.
+    // The JSON map should contain the following keys: `question`, `answers`, `correct_answers`
+    // If any of the expected keys are missing in the JSON map, default values are used (empty strings)
+    // Returns a `Question` object with the parsed data from the JSON map.
     return Question(
       question: json['question'] ?? '',
       answers: [

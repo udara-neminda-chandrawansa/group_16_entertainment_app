@@ -9,7 +9,9 @@ class LeaderboardScreen extends StatefulWidget {
 }
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
+  // method to fetch leaderboard data
   Future<List<Map<String, dynamic>>> fetchLeaderboardData() async {
+    // Fetch the top 10 players from the database
     final response = await Supabase.instance.client
         .from('users') // Replace 'users' with your actual table name
         .select('username, points')
@@ -18,7 +20,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     if (response.isEmpty) {
       throw Exception("Empty Response!");
     }
+    // Convert the response to a list of maps
     final data = response as List;
+    // Return the data as a list of maps
     return data.asMap().entries.map((entry) {
       final rank = entry.key + 1;
       final user = entry.value;

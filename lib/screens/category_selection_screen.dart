@@ -33,6 +33,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     {'name': 'Code', 'icon': Icons.code},
   ];
 
+  // method to proceed to the game screen
   void proceedToGame() {
     if (selectedCategory == null) {
       // Show a warning if no category is selected
