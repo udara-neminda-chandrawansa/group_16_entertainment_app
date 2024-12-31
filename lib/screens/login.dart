@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:group_16_entertainment_app/services/database_handler.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import '../screens/signup.dart';
@@ -31,13 +31,7 @@ class _LoginPageState extends State<LoginPage> {
 
       try {
         // Attempt to sign in using Supabase authentication
-        final response =
-            await Supabase.instance.client
-                .from('users') // Replace 'users' with your actual table name
-                .select('user_id, username, password, points')
-                .filter('username', 'eq', username)
-                .filter('password', 'eq', password)
-                .single(); // Use .single() to retrieve a single user
+        final response = await getUser(username, password);
 
         // Check if the sign-in was successful
         if (response.isNotEmpty) {

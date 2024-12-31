@@ -1,7 +1,7 @@
 // imports
+import 'package:group_16_entertainment_app/services/database_handler.dart';
 import 'login.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -27,9 +27,7 @@ class _SignupPageState extends State<SignupPage> {
 
       try {
         // Get the number of rows in the users table
-        final response = await Supabase.instance.client
-            .from('users')
-            .select('user_id');
+        final response = await getAllUsers();
 
         var rowCount = 0;
         var userId = "user_1";
@@ -40,15 +38,7 @@ class _SignupPageState extends State<SignupPage> {
         }
 
         // Insert new user into the database
-        final insertResponse = await Supabase.instance.client
-            .from('users')
-            .insert({
-              'user_id': userId,
-              'username': name,
-              'password': password,
-              'points': 0,
-            })
-            .select('user_id');
+        final insertResponse = await saveUser(userId, name, password);
 
         if (insertResponse.isNotEmpty) {
           print('Signed up successfully');

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:group_16_entertainment_app/screens/login.dart';
-import 'package:group_16_entertainment_app/services/backend_initializer.dart';
+import 'package:group_16_entertainment_app/services/database_handler.dart';
 
 Future<void> main() async {
   // initialize Flutter widgets binding ()
