@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:group_16_entertainment_app/main.dart';
+import 'home_page.dart';
 import 'package:group_16_entertainment_app/services/game_service.dart';
 import 'package:group_16_entertainment_app/screens/results_screen.dart';
+import 'package:group_16_entertainment_app/entities/question.dart';
 
 class GameScreen extends StatefulWidget {
   final String userId;
@@ -25,13 +26,15 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  Map<String, dynamic>? questionData;
+  // var to hold the question data fetched from `game_service.dart`
+  Question? questionData;
   String? selectedAnswer;
   int totalQuestionsAsked = 0;
   int correctAnswersGiven = 0;
   int score = 0;
   int timer = 30;
   late Timer countdownTimer;
+  // new GameService instance
   final GameService gameService = GameService();
 
   @override
@@ -81,9 +84,9 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  void checkAnswer(String answerKey) {
-    final correctAnswers = questionData?['correct_answers'] ?? {};
-    if (correctAnswers["${answerKey}_correct"] == "true") {
+  void checkAnswer(String inputAnswer) {
+    final correctAnswer = getCorrectAnswer();
+    if (correctAnswer == inputAnswer) {
       setState(() {
         score += 10;
         saveProgress();
@@ -136,14 +139,22 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   String getCorrectAnswer() {
-    final correctAnswers = questionData?['correct_answers'] ?? {};
-    final answers = questionData?['answers'] ?? {};
-    for (var key in correctAnswers.keys) {
-      if (correctAnswers[key] == "true") {
-        return answers[key.replaceFirst("_correct", "")] ?? "Unknown";
-      }
+    final correctAnswer = questionData?.correctAnswer ?? '';
+    switch (correctAnswer) {
+      case 'answer_a':
+        return questionData?.answers[0] ?? '';
+      case 'answer_b':
+        return questionData?.answers[1] ?? '';
+      case 'answer_c':
+        return questionData?.answers[2] ?? '';
+      case 'answer_d':
+        return questionData?.answers[3] ?? '';
+      case 'answer_e':
+        return questionData?.answers[4] ?? '';
+      case 'answer_f':
+        return questionData?.answers[5] ?? '';
     }
-    return "Unknown";
+    return "";
   }
 
   @override
@@ -205,15 +216,15 @@ class _GameScreenState extends State<GameScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      questionData?['question'] ?? "Loading question...",
+                      questionData?.question ?? "Loading question...",
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ...questionData?['answers'].entries.map((entry) {
-                          if (entry.value != null) {
+                    ...questionData?.answers.map((entry) {
+                          if (entry.isNotEmpty) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(
                                 vertical: 8.0,
@@ -221,9 +232,9 @@ class _GameScreenState extends State<GameScreen> {
                               child: ElevatedButton(
                                 onPressed: () {
                                   setState(() {
-                                    selectedAnswer = entry.value;
+                                    selectedAnswer = entry;
                                   });
-                                  checkAnswer(entry.key);
+                                  checkAnswer(entry);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.purple.shade700,
@@ -233,7 +244,7 @@ class _GameScreenState extends State<GameScreen> {
                                     horizontal: 20,
                                   ),
                                 ),
-                                child: Text(entry.value),
+                                child: Text(entry),
                               ),
                             );
                           }

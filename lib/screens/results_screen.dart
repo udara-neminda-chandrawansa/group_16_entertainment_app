@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'game_screen.dart';
-import './../main.dart';
+import 'home_page.dart';
 
 class ResultsScreen extends StatelessWidget {
   final int finalScore;
