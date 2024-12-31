@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'home_page.dart';
-import 'package:group_16_entertainment_app/services/game_service.dart';
+import 'package:group_16_entertainment_app/services/game_service_provider.dart';
 import 'package:group_16_entertainment_app/screens/results_screen.dart';
 import 'package:group_16_entertainment_app/entities/question.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GameScreen extends StatefulWidget {
+class GameScreen extends ConsumerStatefulWidget {
   final String userId;
   final String username;
   final int prevScore;
@@ -22,10 +23,11 @@ class GameScreen extends StatefulWidget {
   });
 
   @override
-  State<GameScreen> createState() => _GameScreenState();
+  // Create the mutable state for the GameScreen
+  ConsumerState<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends ConsumerState<GameScreen> {
   // var to hold the question data fetched from `game_service.dart`
   Question? questionData;
   String? selectedAnswer;
@@ -34,8 +36,6 @@ class _GameScreenState extends State<GameScreen> {
   int score = 0;
   int timer = 30;
   late Timer countdownTimer;
-  // new GameService instance
-  final GameService gameService = GameService();
 
   @override
   void initState() {
@@ -52,20 +52,28 @@ class _GameScreenState extends State<GameScreen> {
 
   // method to fetch a question
   Future<void> fetchQuestion() async {
-    // get the question data from the api
-    questionData = await gameService.fetchQuestion(
-      widget.category,
-      widget.difficulty,
-    );
-    if (questionData != null) {
-      setState(() {
+    // get the `fetchQuestionProvider` from the `ref` object
+    final params = {
+      'category': widget.category,
+      'difficulty': widget.difficulty,
+    };
+    // get the question data using the `fetchQuestionProvider`
+    final questionAsync = await ref.read(fetchQuestionProvider(params).future);
+    // set the question data to the fetched question
+    setState(() {
+      questionData = questionAsync;
+      if (questionData != null) {
         timer = 30;
         startCountdown();
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: Could not fetch question.")),
-      );
+      }
+    });
+    // error display if the question data is null
+    if (questionData == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error: Could not fetch question.")),
+        );
+      }
     }
   }
 
@@ -109,15 +117,23 @@ class _GameScreenState extends State<GameScreen> {
   // method to save the progress of the user
   Future<void> saveProgress() async {
     try {
-      // save the progress of the user using the user_id and the score
-      await gameService.saveProgress(widget.userId, score);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Progress saved successfully!')),
-      );
+      // save the progress using the `saveProgressProvider`
+      final params = {'userId': widget.userId, 'points': score};
+      // get the response from the `saveProgressProvider`
+      await ref.read(saveProgressProvider(params).future);
+      // success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Progress saved successfully!')),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error saving progress: $e')));
+      //error handling
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving progress: $e')));
+      }
     }
   }
 
