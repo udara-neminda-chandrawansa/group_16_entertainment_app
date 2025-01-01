@@ -5,6 +5,7 @@ import 'package:group_16_entertainment_app/services/game_service_provider.dart';
 import 'package:group_16_entertainment_app/screens/results_screen.dart';
 import 'package:group_16_entertainment_app/entities/question.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -253,6 +254,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    ScoreTimerDisplay(score: score, timer: timer),
+                    const SizedBox(height: 20),
                     Text(
                       questionData?.question ?? "Loading question...",
                       style: const TextStyle(
@@ -290,28 +293,67 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                         }).toList() ??
                         [],
                     const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Score: $score",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "Time Left: $timer s",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
     );
+  }
+}
+
+class ScoreTimerDisplay extends StatelessWidget {
+  final int score;
+  final int timer;
+
+  const ScoreTimerDisplay({Key? key, required this.score, required this.timer})
+    : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [_buildAnimatedScore(), _buildAnimatedTimer()],
+    );
+  }
+
+  Widget _buildAnimatedScore() {
+    return TweenAnimationBuilder(
+      tween: IntTween(begin: 0, end: score),
+      duration: const Duration(milliseconds: 500),
+      builder: (context, value, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            "Score: $value",
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ).animate().fadeIn(duration: 300.ms).slideX(begin: -0.2, end: 0);
+      },
+    );
+  }
+
+  Widget _buildAnimatedTimer() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: timer < 10 ? Colors.red[100] : Colors.green[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        "Time Left: $timer s",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: timer < 10 ? Colors.red : Colors.green,
+        ),
+      ),
+    ).animate().fadeIn(duration: 300.ms).slideX(begin: 0.2, end: 0);
   }
 }
