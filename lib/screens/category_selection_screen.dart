@@ -73,56 +73,29 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            // Categories Grid
+            // Category Cards
             Expanded(
               child: GridView.builder(
+                padding: const EdgeInsets.all(16),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.9,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
                 ),
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
-                  return GestureDetector(
+                  return CategoryCard(
+                    icon: category["icon"] as IconData,
+                    title: category["name"],
+                    // if selectedCategory is equal to the current category name, isSelected is true
+                    isSelected: selectedCategory == category["name"],
                     onTap: () {
                       setState(() {
-                        selectedCategory = category['name'];
+                        selectedCategory = category["name"];
                       });
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color:
-                            selectedCategory == category['name']
-                                ? Colors.blue
-                                : Colors.grey[300],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            category['icon'],
-                            size: 48,
-                            color:
-                                selectedCategory == category['name']
-                                    ? Colors.white
-                                    : Colors.black,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            category['name'],
-                            style: TextStyle(
-                              fontSize: 16,
-                              color:
-                                  selectedCategory == category['name']
-                                      ? Colors.white
-                                      : Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   );
                 },
               ),
@@ -176,6 +149,56 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
               child: const Text('Proceed', style: TextStyle(fontSize: 16)),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// CategoryCard widget
+class CategoryCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const CategoryCard({
+    Key? key,
+    required this.icon,
+    this.isSelected = false,
+    required this.onTap,
+    required this.title,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        color: isSelected ? Colors.blue[50] : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: isSelected ? Colors.blue : Colors.grey[300]!,
+            width: 2,
+          ),
+        ),
+        elevation: isSelected ? 8 : 2,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 48,
+                color: isSelected ? Colors.blue : Colors.grey,
+              ),
+              const SizedBox(height: 12),
+              Text(title, style: TextStyle(fontSize: 18)),
+            ],
+          ),
         ),
       ),
     );
