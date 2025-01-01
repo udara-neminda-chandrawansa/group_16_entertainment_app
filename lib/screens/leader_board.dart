@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -101,60 +102,132 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: leaderboardData.length,
-                    itemBuilder: (context, index) {
-                      final player = leaderboardData[index];
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.deepPurple.shade700,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.blue,
-                                  child: Text(
-                                    player['rank'].toString(),
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Text(
-                                  player['name'],
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              '${player['score']} pts',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                LeaderboardList(leaderboardData: leaderboardData),
               ],
             ),
           );
         },
       ),
     );
+  }
+}
+
+class LeaderboardList extends StatelessWidget {
+  final List<Map<String, dynamic>> leaderboardData;
+
+  const LeaderboardList({Key? key, required this.leaderboardData})
+    : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: leaderboardData.length,
+        itemBuilder:
+            (context, index) =>
+                PlayerCard(player: leaderboardData[index], index: index),
+      ),
+    );
+  }
+}
+
+class PlayerCard extends StatelessWidget {
+  final Map<String, dynamic> player;
+  final int index;
+
+  const PlayerCard({Key? key, required this.player, required this.index})
+    : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.deepPurple.shade700,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.shade500,
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    _buildRankAvatar(),
+                    const SizedBox(width: 16),
+                    _buildPlayerName(),
+                  ],
+                ),
+                _buildScore(),
+              ],
+            ),
+          )
+          .animate(delay: (50 * index).ms)
+          .fadeIn(duration: 300.ms)
+          .slideX(begin: 0.2, end: 0)
+          .scale(begin: const Offset(0.95, 0.95)),
+    );
+  }
+
+  Widget _buildRankAvatar() {
+    return CircleAvatar(
+      backgroundColor: _getRankColor(),
+      child: Text(
+        player['rank'].toString(),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlayerName() {
+    return Text(
+      player['name'],
+      style: const TextStyle(
+        fontSize: 16,
+        color: Colors.white,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  Widget _buildScore() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        '${player['score']} pts',
+        style: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Color _getRankColor() {
+    switch (player['rank']) {
+      case 1:
+        return Colors.amber;
+      case 2:
+        return Colors.grey.shade300;
+      case 3:
+        return Colors.brown.shade300;
+      default:
+        return Colors.blue;
+    }
   }
 }
