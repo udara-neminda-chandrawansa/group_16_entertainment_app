@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // User Profile Section as title
+        // User Profile Section as title (custom component)
         title: UserProfile(username: username),
         backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // custom button widget for Start Game
+            // custom button widget for `Start Game` button
             Center(
               child: CustomButton(
                 text: 'Start Game',
@@ -62,7 +62,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20), // Space between buttons
-            // custom button widget for View Leaderboard
+            // custom button widget for `View Leaderboard` button
             Center(
               child: CustomButton(
                 text: 'View Leaderboard',
@@ -86,7 +86,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// CustomButton and UserProfile widgets
+// CustomButton widget
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
@@ -129,6 +129,7 @@ class CustomButton extends StatelessWidget {
   }
 }
 
+// UserProfile widget
 class UserProfile extends StatelessWidget {
   final String username;
 

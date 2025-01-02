@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart'; // custom component library
 import 'game_screen.dart';
 import 'home_page.dart';
 
@@ -23,7 +23,7 @@ class ResultsScreen extends StatelessWidget {
     required this.difficulty,
   });
 
-  // method to share the score
+  // method to share the score (custom component)
   void shareScore(BuildContext context) {
     final String message =
         "I scored $finalScore points on the Tech Quiz App! 🎉\nCan you beat my score?";

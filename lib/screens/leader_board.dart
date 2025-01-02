@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // animation library for custom components
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -86,7 +86,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               ),
             );
           }
-
           final leaderboardData = snapshot.data!;
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -102,6 +101,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                // custom component for Leaderboard
                 LeaderboardList(leaderboardData: leaderboardData),
               ],
             ),
@@ -112,6 +112,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 }
 
+// LeaderboardList widget
 class LeaderboardList extends StatelessWidget {
   final List<Map<String, dynamic>> leaderboardData;
 
@@ -131,6 +132,7 @@ class LeaderboardList extends StatelessWidget {
   }
 }
 
+// PlayerCard widget
 class PlayerCard extends StatelessWidget {
   final Map<String, dynamic> player;
   final int index;

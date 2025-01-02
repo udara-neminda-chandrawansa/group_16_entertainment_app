@@ -5,7 +5,7 @@ import 'package:group_16_entertainment_app/services/game_service_provider.dart';
 import 'package:group_16_entertainment_app/screens/results_screen.dart';
 import 'package:group_16_entertainment_app/entities/question.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // animation library for custom component
 
 class GameScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -254,6 +254,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ScoreTimerDisplay (custom component)
                     ScoreTimerDisplay(score: score, timer: timer),
                     const SizedBox(height: 20),
                     Text(
@@ -300,6 +301,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 }
 
+// ScoreTimerDisplay widget
 class ScoreTimerDisplay extends StatelessWidget {
   final int score;
   final int timer;

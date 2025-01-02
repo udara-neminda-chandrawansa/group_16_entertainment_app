@@ -86,6 +86,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
+                  // CategoryCard (custom component)
                   return CategoryCard(
                     icon: category["icon"] as IconData,
                     title: category["name"],
